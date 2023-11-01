@@ -70,8 +70,6 @@ public class ModelCommand implements TabExecutor {
         int index = 0;
         for (Entity e: w.getEntities()) {
             if (e.getScoreboardTags().contains(tag)) {
-                // TODO 블럭디스플레이가 아닌 텍스트/아이템 디스플레이
-                // TODO config에서 model.model.<모델명>.<n>.type: block / item / text
                 if (e instanceof BlockDisplay bd) {
                     // 블럭 코드 (str)
                     String block = bd.getBlock().getAsString();

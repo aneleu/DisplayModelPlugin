@@ -4,6 +4,7 @@ import me.aneleu.displaymodel.DisplayModel;
 import me.aneleu.displaymodel.DisplayModelPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,7 @@ import java.util.List;
  model tp <객체명>                         모델을 현재 플레이어 위치로 텔레포트시킵니다.
  model tp <객체명> <x> <y> <z>             모델을 지정한 좌표로 텔레포트시킵니다.
  model kill <객체명>                       객체를 월드에서 삭제합니다.
- model remove <모델명>                     모델을 삭제합니다. (중요! 모델이 삭제되면 그 모델의 객체가 모두 월드에서 삭제됩니다.)
+ model remove <모델명>                     모델을 삭제합니다. (중요! 모델이 삭제되어도 그 모델의 오브젝트는 월드에서 제거되지 않습니다.)
  model list                                모델 리스트를 출력합니다.
  model list <모델명>                       해당 모델의 객체 리스트를 출력합니다.
 */
@@ -39,8 +40,8 @@ public class ModelCommand implements TabExecutor {
 
     Player p;
 
-    public ModelCommand(DisplayModelPlugin plugin) {
-        this.plugin = plugin;
+    public ModelCommand() {
+        plugin = DisplayModelPlugin.plugin;
     }
 
     private void sendInfoMessage(String message) {
@@ -69,6 +70,8 @@ public class ModelCommand implements TabExecutor {
         int index = 0;
         for (Entity e: w.getEntities()) {
             if (e.getScoreboardTags().contains(tag)) {
+                // TODO 블럭디스플레이가 아닌 텍스트/아이템 디스플레이
+                // TODO config에서 model.model.<모델명>.<n>.type: block / item / text
                 if (e instanceof BlockDisplay bd) {
                     // 블럭 코드 (str)
                     String block = bd.getBlock().getAsString();
@@ -88,9 +91,9 @@ public class ModelCommand implements TabExecutor {
                     // TODO rotation도 만들기
                     
                     // config 저장
-                    plugin.getConfig().set("model.model." + name + "." + String.valueOf(index) + ".block", block);
-                    plugin.getConfig().set("model.model." + name + "." + String.valueOf(index) + ".loc", loc);
-                    plugin.getConfig().set("model.model." + name + "." + String.valueOf(index) + ".scale", scale);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".block", block);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".loc", loc);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".scale", scale);
 
                 }
 
@@ -163,7 +166,12 @@ public class ModelCommand implements TabExecutor {
 
                 if (args.length == 3) {
 
-                    saveModel(args[1], args[2]);
+                    if (plugin.getConfig().getStringList("model.list").contains(args[1])) {
+                        saveModel(args[1], args[2]);
+                        sendInfoMessage("모델을 저장했습니다.");
+                    } else {
+                        sendErrorMessage("존재하지 않는 모델입니다.");
+                    }
 
                 } else {
                     sendSuggestionMessage("/model save <모델명> <태그>");
@@ -174,6 +182,7 @@ public class ModelCommand implements TabExecutor {
                 if (args.length == 3) {
                     String model_name = args[1];
                     String obj_name = args[2];
+                    // TODO 존재하지 않는 모델을 소환한 경우 오류 메시지 출력
                     plugin.objects.put(obj_name, new DisplayModel(model_name, obj_name, p.getLocation()));
 
                 } else if (args.length == 6) {

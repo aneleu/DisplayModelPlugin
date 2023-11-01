@@ -1,6 +1,6 @@
-name: DisplayModel
+name: DisplayModelPlugin
 version: '1.0.0'
-main: me.aneleu.displaymodel.DisplayModel
+main: me.aneleu.displaymodel.DisplayModelPlugin
 api-version: '1.20'
 commands:
   model:

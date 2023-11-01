@@ -47,8 +47,6 @@ public class DisplayModel {
     void spawnModel() {
         plugin.getConfig().set("model.obj."+obj_name+".model", model_name);
         plugin.getConfig().set("model.obj."+obj_name+".loc", center_loc);
-        // TODO rotation 추가하기
-        // TODO 블럭디스플레이가 아닌 텍스트/아이템 디스플레이
         // TODO NullException 처리
         Transformation trans = new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(), new AxisAngle4f());
 

@@ -4,7 +4,6 @@ import me.aneleu.displaymodel.DisplayModel;
 import me.aneleu.displaymodel.DisplayModelPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.AxisAngle4d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,24 +76,47 @@ public class ModelCommand implements TabExecutor {
                     // 블럭 코드 (str)
                     String block = bd.getBlock().getAsString();
 
-                    // 상대위치
-                    double dx = bd.getX() + bd.getTransformation().getTranslation().x - coord.get(0);
-                    double dy = bd.getY() + bd.getTransformation().getTranslation().y - coord.get(1);
-                    double dz = bd.getZ() + bd.getTransformation().getTranslation().z - coord.get(2);
-                    double[] loc = {dx, dy, dz};
+                    // location
+                    double dx = bd.getX() - coord.get(0);
+                    double dy = bd.getY() - coord.get(1);
+                    double dz = bd.getZ() - coord.get(2);
+                    List<Double> location = new ArrayList<>(List.of(dx, dy, dz));
 
-                    // 스케일
-                    double scale_x = bd.getTransformation().getScale().x;
-                    double scale_y = bd.getTransformation().getScale().y;
-                    double scale_z = bd.getTransformation().getScale().z;
-                    double[] scale = {scale_x, scale_y, scale_z};
+                    // translation
+                    float translation_x =  bd.getTransformation().getTranslation().x;
+                    float translation_y = bd.getTransformation().getTranslation().y;
+                    float translation_z = bd.getTransformation().getTranslation().z;
+                    List<Float> translation = new ArrayList<>(List.of(translation_x, translation_y, translation_z));
 
-                    // TODO rotation도 만들기
-                    
+                    // scale
+                    float scale_x = bd.getTransformation().getScale().x;
+                    float scale_y = bd.getTransformation().getScale().y;
+                    float scale_z = bd.getTransformation().getScale().z;
+                    List<Float> scale = new ArrayList<>(List.of(scale_x, scale_y, scale_z));
+
+                    // left_rotation - quaternium
+                    float quaternium_w = bd.getTransformation().getLeftRotation().w;
+                    float quaternium_x = bd.getTransformation().getLeftRotation().x;
+                    float quaternium_y = bd.getTransformation().getLeftRotation().y;
+                    float quaternium_z = bd.getTransformation().getLeftRotation().z;
+                    List<Float> left_rotation_q = new ArrayList<>(List.of(quaternium_w, quaternium_x, quaternium_y, quaternium_z));
+
+                    // left_rotation - axis/angle
+                    AxisAngle4d axis_angle = new AxisAngle4d();
+                    bd.getTransformation().getLeftRotation().get(axis_angle);
+                    double axis_x = axis_angle.x;
+                    double axis_y = axis_angle.y;
+                    double axis_z = axis_angle.z;
+                    double angle = axis_angle.angle;
+                    List<Double> left_rotation_aa = new ArrayList<>(List.of(axis_x, axis_y, axis_z, angle));
+
                     // config 저장
                     plugin.getConfig().set("model.model." + name + "." + index + ".block", block);
-                    plugin.getConfig().set("model.model." + name + "." + index + ".loc", loc);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".location", location);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".translation", translation);
                     plugin.getConfig().set("model.model." + name + "." + index + ".scale", scale);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".rotation_quaternium", left_rotation_q);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".rotation_axis_angle", left_rotation_aa);
 
                 }
 
@@ -137,7 +160,8 @@ public class ModelCommand implements TabExecutor {
                 if (args.length == 2) {
                     // model center <모델명>
                     if (plugin.getConfig().getStringList("model.list").contains(args[1])) {
-                        plugin.getConfig().set("model.center."+args[1], new double[]{p.getX(), p.getY(), p.getZ()});
+                        List<Double> center = new ArrayList<>(List.of(p.getX(), p.getY(), p.getZ()));
+                        plugin.getConfig().set("model.center."+args[1], center);
                         sendInfoMessage(args[1] + " 모델의 중심 좌표를 이 곳으로 설정했습니다.");
                     } else {
                         sendErrorMessage("존재하지 않는 모델입니다.");
@@ -149,7 +173,8 @@ public class ModelCommand implements TabExecutor {
                             double x = Double.parseDouble(args[2]);
                             double y = Double.parseDouble(args[3]);
                             double z = Double.parseDouble(args[4]);
-                            plugin.getConfig().set("model.center."+args[1], new double[]{x, y, z});
+                            List<Double> center = new ArrayList<>(List.of(x, y, z));
+                            plugin.getConfig().set("model.center."+args[1], center);
                             sendInfoMessage(args[1] + " 모델의 중심 좌표를 (" + args[2] + ", " + args[3] + ", " + args[4] + ") 로 설정했습니다.");
                         } catch (Exception exception) {
                             sendErrorMessage("존재하지 않는 좌표입니다.");
@@ -204,7 +229,7 @@ public class ModelCommand implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-
+        // TODO
 
         return List.of();
     }

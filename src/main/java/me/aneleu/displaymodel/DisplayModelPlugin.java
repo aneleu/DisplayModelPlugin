@@ -1,5 +1,6 @@
 package me.aneleu.displaymodel;
 
+import me.aneleu.displaymodel.Commands.DisplayCommand;
 import me.aneleu.displaymodel.Commands.ModelCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,7 +44,7 @@ public final class DisplayModelPlugin extends JavaPlugin {
         
         // 커맨드
         getCommand("model").setExecutor(new ModelCommand());
-        getCommand("test").setExecutor(new ModelCommand());
+        getCommand("display").setExecutor(new DisplayCommand());
 
     }
 

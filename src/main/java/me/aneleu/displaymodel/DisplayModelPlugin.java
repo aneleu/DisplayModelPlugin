@@ -1,7 +1,7 @@
 package me.aneleu.displaymodel;
 
-import me.aneleu.displaymodel.Commands.DisplayCommand;
-import me.aneleu.displaymodel.Commands.ModelCommand;
+import me.aneleu.displaymodel.commands.DisplayCommand;
+import me.aneleu.displaymodel.commands.ModelCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;

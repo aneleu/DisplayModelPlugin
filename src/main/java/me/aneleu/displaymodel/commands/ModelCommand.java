@@ -1,4 +1,4 @@
-package me.aneleu.displaymodel.Commands;
+package me.aneleu.displaymodel.commands;
 
 import me.aneleu.displaymodel.DisplayModel;
 import me.aneleu.displaymodel.DisplayModelPlugin;

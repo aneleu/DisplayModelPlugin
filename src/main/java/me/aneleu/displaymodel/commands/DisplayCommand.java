@@ -1,4 +1,4 @@
-package me.aneleu.displaymodel.Commands;
+package me.aneleu.displaymodel.commands;
 
 import me.aneleu.displaymodel.DisplayModelPlugin;
 import net.kyori.adventure.text.Component;
@@ -12,10 +12,7 @@ import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
-import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 

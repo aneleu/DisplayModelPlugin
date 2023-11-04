@@ -19,6 +19,7 @@ import org.joml.AxisAngle4d;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class DisplayCommand implements CommandExecutor {
 
@@ -261,6 +262,72 @@ public class DisplayCommand implements CommandExecutor {
                 display.setTransformation(tf);
             }
             
+        } else if (args[0].equalsIgnoreCase("yaw")) {
+            // yaw <value>
+
+            BlockDisplay display = grab_entity.get(p.getName());
+            if (display == null) {
+                sendErrorMessage("그랩하고 있는 디스플레이가 없습니다.");
+                return true;
+            }
+            if (args.length == 1) {
+                // TODO
+            } else if (args.length == 2) {
+                float x = Float.parseFloat(args[1]);
+                Location loc = display.getLocation();
+                loc.setYaw(x);
+                display.teleport(loc);
+            }
+
+        } else if (args[0].equalsIgnoreCase("pitch")) {
+            // pitch <value>
+
+            BlockDisplay display = grab_entity.get(p.getName());
+            if (display == null) {
+                sendErrorMessage("그랩하고 있는 디스플레이가 없습니다.");
+                return true;
+            }
+            if (args.length == 1) {
+                // TODO
+            } else if (args.length == 2) {
+                float x = Float.parseFloat(args[1]);
+                Location loc = display.getLocation();
+                loc.setPitch(x);
+                display.teleport(loc);
+            }
+
+        } else if (args[0].equalsIgnoreCase("delete")) {
+
+            BlockDisplay display = grab_entity.get(p.getName());
+            if (display == null) {
+                sendErrorMessage("그랩하고 있는 디스플레이가 없습니다.");
+                return true;
+            }
+            display.remove();
+        } else if (args[0].equalsIgnoreCase("tag")) {
+
+            BlockDisplay display = grab_entity.get(p.getName());
+            if (display == null) {
+                sendErrorMessage("그랩하고 있는 디스플레이가 없습니다.");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("add")) {
+                display.addScoreboardTag(args[2]);
+                sendInfoMessage("그랩한 디스플레이에 " + args[2] + " 태그를 추가했습니다.");
+            } else if (args[1].equalsIgnoreCase("remove")) {
+                if (!display.removeScoreboardTag(args[2])) {
+                    sendErrorMessage("그랩한 디스플레이의 태그 목록에 " + args[2] + "가 없습니다.");
+                }
+            } else if (args[1].equalsIgnoreCase("list")) {
+                Set<String> tags = display.getScoreboardTags();
+                if (tags.size() != 0) {
+                    for (String tag: tags) {
+                        sendSuggestionMessage(tag);
+                    }
+                } else {
+                    sendSuggestionMessage("그랩한 디스플레이는 아무 태그도 가지고 있지 않습니다.");
+                }
+            }
         }
 
         return true;

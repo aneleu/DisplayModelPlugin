@@ -110,6 +110,11 @@ public class ModelCommand implements TabExecutor {
                     double angle = axis_angle.angle;
                     List<Double> left_rotation_aa = new ArrayList<>(List.of(axis_x, axis_y, axis_z, angle));
 
+                    // yaw & pitch
+                    float yaw = bd.getYaw();
+                    float pitch = bd.getPitch();
+                    List<Float> yaw_pitch = new ArrayList<>(List.of(yaw, pitch));
+
                     // config 저장
                     plugin.getConfig().set("model.model." + name + "." + index + ".block", block);
                     plugin.getConfig().set("model.model." + name + "." + index + ".location", location);
@@ -117,6 +122,7 @@ public class ModelCommand implements TabExecutor {
                     plugin.getConfig().set("model.model." + name + "." + index + ".scale", scale);
                     plugin.getConfig().set("model.model." + name + "." + index + ".rotation_quaternium", left_rotation_q);
                     plugin.getConfig().set("model.model." + name + "." + index + ".rotation_axis_angle", left_rotation_aa);
+                    plugin.getConfig().set("model.model." + name + "." + index + ".yaw_pitch", yaw_pitch);
 
                 }
 

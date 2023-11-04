@@ -34,8 +34,6 @@ public class DisplayModel {
         this.model_name = model_name;
         this.obj_name = obj_name;
         center_loc = loc;
-        center_loc.setPitch(0);
-        center_loc.setYaw(0);
         center_x = center_loc.x();
         center_y = center_loc.y();
         center_z = center_loc.z();
@@ -63,9 +61,12 @@ public class DisplayModel {
             List<Float> translation = plugin.getConfig().getFloatList("model.model."+model_name+"."+s+".translation");
             List<Float> scale = plugin.getConfig().getFloatList("model.model."+model_name+"."+s+".scale");
             List<Float> left_rotation = plugin.getConfig().getFloatList("model.model."+model_name+"."+s+".rotation_quaternium");
+            List<Float> yaw_pitch = plugin.getConfig().getFloatList("model.model."+model_name+"."+s+".yaw_pitch");
 
             Location loc = center_loc.clone();
             loc.add(location.get(0), location.get(1), location.get(2));
+            loc.setYaw(yaw_pitch.get(0));
+            loc.setPitch(yaw_pitch.get(1));
 
             trans.getTranslation().x = translation.get(0);
             trans.getTranslation().y = translation.get(1);

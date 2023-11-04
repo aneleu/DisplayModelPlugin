@@ -28,6 +28,8 @@ public class DisplayCommand implements CommandExecutor {
 
     HashMap<String, BlockDisplay> grab_entity = new HashMap<>();
 
+    double[] yaw_axis = new double[]{0, 1, 0};
+
     public DisplayCommand() {
         plugin = DisplayModelPlugin.plugin;
     }
@@ -71,10 +73,24 @@ public class DisplayCommand implements CommandExecutor {
             List<BlockDisplay> raycast_result = new ArrayList<>();
             
             Location eye_loc = p.getEyeLocation();
-            double[] point = {eye_loc.getX(), eye_loc.getY(), eye_loc.getZ()};
+            double[] point1 = {eye_loc.getX(), eye_loc.getY(), eye_loc.getZ()};
             double[] point2 = {eye_loc.getX() + p.getLocation().getDirection().getX(), eye_loc.getY() + p.getLocation().getDirection().getY(), eye_loc.getZ() + p.getLocation().getDirection().getZ()};
 
             for (BlockDisplay display: p.getWorld().getEntitiesByClass(BlockDisplay.class)) {
+
+                // yaw / pitch 를 기준으로 회전시킨 두 점 구하기
+                double[] display_loc = {display.getX(), display.getY(), display.getZ()};
+                double yaw_rad = display.getYaw() * 0.017453292519943295;
+                double pitch_rad = display.getPitch() * 0.017453292519943295;
+                double[] pitch_axis = {-Math.cos(yaw_rad), 0, -Math.sin(yaw_rad)};
+
+                double[] dotA1 = RaycastUtil.rotateDotByVector(point1, display_loc, pitch_axis, pitch_rad);
+                double[] dotB1 = RaycastUtil.rotateDotByVector(point2, display_loc, pitch_axis, pitch_rad);
+
+                double[] dotA2 = RaycastUtil.rotateDotByVector(dotA1, display_loc, yaw_axis, yaw_rad);
+                double[] dotB2 = RaycastUtil.rotateDotByVector(dotB1, display_loc, yaw_axis, yaw_rad);
+
+                // y_rotation axis를 기준으로 회전시킨 두 점 구하기
                 Transformation trans = display.getTransformation();
                 AxisAngle4d axis_angle = new AxisAngle4d();
                 trans.getLeftRotation().get(axis_angle);
@@ -98,9 +114,8 @@ public class DisplayCommand implements CommandExecutor {
                 double[] pos8 = {x, y + dy, z + dz};
                 double[][] cube = {pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8};
                 
-                // 축을 기준으로 회전시킨 두 점 구하기
-                double[] dotA = RaycastUtil.rotateDotByVector(point, origin, axis, theta);
-                double[] dotB = RaycastUtil.rotateDotByVector(point2, origin, axis, theta);
+                double[] dotA = RaycastUtil.rotateDotByVector(dotA2, origin, axis, theta);
+                double[] dotB = RaycastUtil.rotateDotByVector(dotB2, origin, axis, theta);
                 
                 // 레이캐스트 결과
                 boolean result = RaycastUtil.intersects(cube, dotA, dotB);

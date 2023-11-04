@@ -3,6 +3,7 @@ package me.aneleu.displaymodel;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -52,7 +53,11 @@ public class DisplayModel {
         // TODO NullException 처리
         Transformation trans = new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(), new AxisAngle4f());
 
-        for (String s: plugin.getConfig().getConfigurationSection("model.model."+model_name).getKeys(false)) {
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection("model.model."+model_name);
+        if (section == null) {
+            return;
+        }
+        for (String s: section.getKeys(false)) {
             Material block = Material.matchMaterial(plugin.getConfig().getString("model.model." + model_name + "." + s + ".block"));
             List<Double> location = plugin.getConfig().getDoubleList("model.model."+model_name+"."+s+".location");
             List<Float> translation = plugin.getConfig().getFloatList("model.model."+model_name+"."+s+".translation");

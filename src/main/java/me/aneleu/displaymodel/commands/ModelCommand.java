@@ -74,7 +74,7 @@ public class ModelCommand implements TabExecutor {
                 // TODO config에서 model.model.<모델명>.<n>.type: block / item / text
                 if (e instanceof BlockDisplay bd) {
                     // 블럭 코드 (str)
-                    String block = bd.getBlock().getAsString();
+                    String block = bd.getBlock().getAsString(true);
 
                     // location
                     double dx = bd.getX() - coord.get(0);

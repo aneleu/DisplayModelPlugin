@@ -1,0 +1,11 @@
+name: DisplayModelPlugin
+version: '1.0.0'
+main: me.aneleu.displaymodelplugin.DisplayModelPlugin
+api-version: '1.21'
+commands:
+  r:
+    description: reload
+  display:
+    description: display spawn / edit
+    aliases:
+      - d

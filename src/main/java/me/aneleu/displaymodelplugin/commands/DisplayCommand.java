@@ -2,8 +2,7 @@ package me.aneleu.displaymodelplugin.commands;
 
 import me.aneleu.displaymodelplugin.DisplayModelPlugin;
 import me.aneleu.displaymodelplugin.utils.Message;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
+import me.aneleu.displaymodelplugin.utils.Raycast;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,8 +13,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
+import org.joml.AxisAngle4f;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public class DisplayCommand implements CommandExecutor {
@@ -100,8 +102,31 @@ public class DisplayCommand implements CommandExecutor {
             Message.sendInfoMessage(player, "디스플레이를 소환했습니다. 소환된 디스플레이가 그랩되었습니다.");
 
         } else if (args[0].equalsIgnoreCase("grab")) {
-            // TODO
 
+            List<BlockDisplay> raycastResult = new ArrayList<>();
+
+            for (BlockDisplay display: player.getWorld().getEntitiesByClass(BlockDisplay.class)) {
+                if (Raycast.isPlayerTargetingDisplay(player, display)) {
+                    raycastResult.add(display);
+                }
+
+            }
+
+            if (!raycastResult.isEmpty()) {
+                double minDistance = raycastResult.getFirst().getLocation().distance(player.getLocation());
+                BlockDisplay minDistanceDisplay = raycastResult.getFirst();
+                for (BlockDisplay display: raycastResult) {
+                    double distance = display.getLocation().distance(player.getLocation());
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        minDistanceDisplay = display;
+                    }
+                }
+                grab(player.getName(), minDistanceDisplay);
+                Message.sendInfoMessage(player, "디스플레이를 그랩했습니다.");
+            } else {
+                Message.sendSuggestionMessage(player, "바라보고 있는 곳에 디스플레이가 없습니다.");
+            }
 
 
 
@@ -170,15 +195,11 @@ public class DisplayCommand implements CommandExecutor {
                 float x = Float.parseFloat(args[1]);
                 float y = Float.parseFloat(args[2]);
                 float z = Float.parseFloat(args[3]);
-                float magnitude = (float) Math.sqrt(x * x + y * y + z * z);
-                if (magnitude != 0) {
-                    x /= magnitude;
-                    y /= magnitude;
-                    z /= magnitude;
-                }
                 float angle = (float) Math.toRadians(Float.parseFloat(args[4]));
+                AxisAngle4f axisAngle4f = new AxisAngle4f(angle, x, y, z);
+                axisAngle4f.normalize();
                 Transformation transformation = display.getTransformation();
-                transformation.getLeftRotation().setAngleAxis(angle, x, y, z);
+                transformation.getLeftRotation().set(axisAngle4f);
                 display.setTransformation(transformation);
             }
 
